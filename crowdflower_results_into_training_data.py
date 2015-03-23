@@ -10,6 +10,7 @@ import HTMLParser
 import argparse
 import os
 from collections import Counter
+from random import randint
 
 
 def read_full_results(results_file):
@@ -63,7 +64,7 @@ def set_majority_vote_answer(results_json):
             answers_count = Counter(v[fe]['answers'])
             majority = v[fe]['judgments'] / 2.0
             for answer,freq in answers_count.iteritems():
-                if freq > majority:
+                if freq > majority or (freq == majority and randint(0,1) == 0):
                     v[fe]['majority'] = answer
 
             if not v[fe].get('majority'):
