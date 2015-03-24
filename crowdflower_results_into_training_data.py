@@ -64,8 +64,11 @@ def set_majority_vote_answer(results_json):
             answers_count = Counter(v[fe]['answers'])
             majority = v[fe]['judgments'] / 2.0
             for answer,freq in answers_count.iteritems():
-                if freq > majority or (freq == majority and randint(0,1) == 0):
+                if freq > majority:
                     v[fe]['majority'] = answer
+                elif freq == majority:
+                    v[fe]['majority'] = answers_count.keys()[randint(0,1)]
+                    break
 
             if not v[fe].get('majority'):
                 print "HEADS UP! No majority answer for sentence [%s], FE [%s]" % (k, fe)
