@@ -108,6 +108,17 @@ def process_sentence(sentence_id, annotations, lines):
                 continue
             elif entity.startswith(token) and len(entity.split()) > 1:
                 j = 0
+                entity_check = True
+                for entity_token in entity.split():
+                    if entity_token != lines[i + j][0]:
+                        # entity and lines are not matching
+                        entity_check = False
+                        break
+                    j += 1
+                if entity_check == False:
+                    continue
+
+                j = 0
                 while j < len(entity.split()) - 1:
                     lines.pop(i + j)
                     j += 1
