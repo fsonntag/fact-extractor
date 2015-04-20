@@ -14,7 +14,7 @@ debug = True
 all_chunks = {}
 
 # From https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Longest_common_substring#Python2
-def longest_common_substring(s1, s2):
+def longest_common_sublist(s1, s2):
     m = [[0] * (1 + len(s2)) for i in xrange(1 + len(s1))]
     longest, x_longest = 0, 0
     for x in xrange(1, 1 + len(s1)):
@@ -36,12 +36,14 @@ for path, subdirs, files in os.walk(sys.argv[1]):
         if not re.match('^[0-9]', name): continue 
         # Standard sentence ID
         sentence_id = '%02d' % int(os.path.splitext(name)[0])
+        if sentence_id not in all_chunks.keys():
+            all_chunks[sentence_id] = {}
         # links
         if 'twm-links' in path:
             links = json.load(codecs.open(f, 'rb', 'utf-8'))
             link_chunks = set()
             for sentence, val in links.iteritems():
-                all_chunks[sentence_id] = {'sentence': sentence}
+                all_chunks[sentence_id]['sentence'] = sentence
                 for diz in val:
                     # Skip chunks if they are in a stopwords list
                     chunk = diz['chunk']
@@ -138,17 +140,29 @@ for sentence_id, values in all_chunks.iteritems():
 
     combined = tp_chunks.union(ngram_chunks, link_chunks)
     pairs = itertools.combinations(combined, 2)
-    # Merge chunks in case of common substrings
+
+    merged_chunks = set()
+    to_remove = set()
+    # Merge chunks in case of common words
     for p1, p2 in pairs:
         print p1
         print p2
-        common = longest_common_substring(p1, p2)
-        if common:
-            print common
-            split1 = p1.split(common)
-            split2 = p2.split(common)
-            total = split1 + [common] + split2
+        split1 = p1.split()
+        split2 = p2.split()
+        common_words = longest_common_sublist(split1, split2)
+        if common_words:
+            common_substring = ' '.join(common_words)
+            print common_substring
+            split1 = p1.split(common_substring)
+            split2 = p2.split(common_substring)
+            total = split1 + [common_substring] + split2
             print ''.join(total)
+            merged_chunks.add(''.join(total))
+            to_remove.add(p1)
+            to_remove.add(p2)
+
+    combined.difference_update(to_remove)
+    combined.update(merged_chunks)
 
     # Cast to list for json serialization
     current['chunks'] = list(combined)
