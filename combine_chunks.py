@@ -161,6 +161,8 @@ for sentence_id, values in all_chunks.iteritems():
     combined.difference_update(to_remove)
     combined.update(merged_chunks)
 
+    combined = [chunk for chunk in combined if chunk in current['sentence']]
+
     # Cast to list for json serialization
     current['chunks'] = list(combined)
     all_combined.append(current)
