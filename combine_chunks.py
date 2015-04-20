@@ -14,7 +14,7 @@ debug = True
 all_chunks = {}
 
 # From https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Longest_common_substring#Python2
-def longest_common_sublist(s1, s2):
+def longest_common_substring(s1, s2):
     m = [[0] * (1 + len(s2)) for i in xrange(1 + len(s1))]
     longest, x_longest = 0, 0
     for x in xrange(1, 1 + len(s1)):
@@ -147,11 +147,8 @@ for sentence_id, values in all_chunks.iteritems():
     for p1, p2 in pairs:
         print p1
         print p2
-        split1 = p1.split()
-        split2 = p2.split()
-        common_words = longest_common_sublist(split1, split2)
-        if common_words:
-            common_substring = ' '.join(common_words)
+        common_substring = longest_common_substring(p1, p2)
+        if common_substring and p1.endswith(common_substring) and p2.startswith(common_substring):
             print common_substring
             split1 = p1.split(common_substring)
             split2 = p2.split(common_substring)
